@@ -1,0 +1,75 @@
+// pages/KanbanPage.js
+const { expect } = require('@playwright/test');
+
+class KanbanPage {
+  constructor(page) {
+    this.page = page;
+  }
+
+  async navigate() {
+    await this.page.goto('https://kanban-566d8.firebaseapp.com/');
+    await this.page.waitForSelector('section[data-dragscroll]');
+  }
+
+  async selectCardWithIncompleteSubtasks() {
+    const columns = await this.page.$$('section[data-dragscroll]');
+    let cardToEdit;
+    let completed, total;
+
+    for (let i = 1; i < columns.length; i++) {
+      const column = columns[i];
+      const cards = await column.$$('article');
+
+      for (const card of cards) {
+        const subtaskText = await card.$eval('p', el => el.textContent.trim());
+        [completed, total] = subtaskText.match(/\d+/g);
+
+        if (completed < total) {
+          cardToEdit = card;
+          break;
+        }
+      }
+      if (cardToEdit) break;
+    }
+
+    if (!cardToEdit) {
+      throw new Error('No card with incomplete subtasks found outside the first column.');
+    }
+
+    return { cardToEdit, completed, total };
+  }
+
+  async completeSubtask(cardToEdit) {
+    await cardToEdit.click();
+    const subtaskElement = await this.page.$("//div[@class='h-4 w-4 rounded-sm flex items-center justify-center absolute top-1/2 left-1/2 translate-y-[-50%] translate-x-[-50%] bg-white border border-medium-grey border-opacity-25, dark:bg-dark-grey dark:border-opacity-25']");
+    await subtaskElement.click();
+  }
+
+  async moveTaskToFirstColumn() {
+    await this.page.click('div.text-sm.text-black.dark\\:text-white.font-bold.rounded.px-4.py-3.relative.w-full.flex.items-center.border.border-medium-grey.border-opacity-25.cursor-pointer.hover\\:border-main-purple.focus\\:border-main-purple.group');
+    await this.page.click('div.p-4.text-medium-grey.hover\\:text-black.dark\\:hover\\:text-white:first-of-type');
+  }
+
+  async closeCardEditPage() {
+    await this.page.mouse.click(10, 10);
+  }
+
+  async getStrikedThroughSubtask() {
+    return await this.page.$('span.text-black.dark\\:text-white.text-xs.font-bold.line-through.text-opacity-50.dark\\:text-opacity-50');
+  }
+
+  async getSubtaskText(cardToEdit) {
+    return await cardToEdit.$eval('p', el => el.textContent.trim());
+  }
+
+  async getFirstColumnCards() {
+    const firstColumn = await this.page.$('section[data-dragscroll]:first-child');
+    return await firstColumn.$$('article');
+  }
+
+  async getCardId(card) {
+    return await card.getAttribute('data-card-id');
+  }
+}
+
+module.exports = KanbanPage;
