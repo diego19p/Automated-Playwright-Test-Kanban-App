@@ -7,10 +7,10 @@ class KanbanPage {
 
     // Declarar los Locators aquí
     this.boardColumns = 'section[data-dragscroll]';
-    this.cardSelector = 'article';
-    this.subtaskText = 'p';
+    this.cardSelector = "article[class='group flex flex-col bg-white dark:bg-dark-grey p-4 rounded-lg cursor-pointer shadow-task max-w-[280px]']";
+    this.subtaskText = "p[class='text-xs text-medium-grey font-bold select-none']";
     this.subtaskCheckbox = "//div[@class='h-4 w-4 rounded-sm flex items-center justify-center absolute top-1/2 left-1/2 translate-y-[-50%] translate-x-[-50%] bg-white border border-medium-grey border-opacity-25, dark:bg-dark-grey dark:border-opacity-25']";
-    this.columnDropdown = 'div.text-sm.text-black.dark\\:text-white.font-bold.rounded.px-4.py-3.relative.w-full.flex.items-center.border.border-medium-grey.border-opacity-25.cursor-pointer.hover\\:border-main-purple.focus\\:border-main-purple.group';
+    this.columnDropdown = "//div[@class='text-sm text-black dark:text-white font-bold rounded px-4 py-3 relative w-full flex items-center border border-medium-grey border-opacity-25 cursor-pointer hover:border-main-purple focus:border-main-purple group']";
     this.firstColumnOption = 'div.p-4.text-medium-grey.hover\\:text-black.dark\\:hover\\:text-white:first-of-type';
     this.strikedThroughSubtask = 'span.text-black.dark\\:text-white.text-xs.font-bold.line-through.text-opacity-50.dark\\:text-opacity-50';
   }
